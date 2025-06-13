@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 
 namespace Garage
 {
     internal class Garage<T> : IEnumerable<T> where T : Vehicle
     {
         //privat array att hålla fordonen
-        private T[] vehicles;
+        private T?[] vehicles;
 
         //räknare som jag uppdaterar när jag lägger till fordon eller tar bort fordon
         int count;
@@ -32,12 +27,6 @@ namespace Garage
                     yield return item;
                 }
             }
-
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         //metod för att lägga till
@@ -45,8 +34,11 @@ namespace Garage
         {
             for (var i = 0; i < vehicles.Length; i++)
             {
-                vehicles[i] = vehicle;
-                return true;
+                if (vehicles[i] == null)
+                {
+                    vehicles[i] = vehicle;
+                    return true;
+                }
             }
             return false;
         }
@@ -55,7 +47,8 @@ namespace Garage
         {
             for (var i = 0; i < vehicles.Length; i++)
             {
-                if (vehicles[i].Licenseplate == vehicle.Licenseplate)
+                var currentVehicle = vehicles[i];
+                if (currentVehicle != null && currentVehicle.Licenseplate == vehicle.Licenseplate)
                 {
                     vehicles[i] = null;
                     return true;
@@ -63,5 +56,6 @@ namespace Garage
             }
             return false;
         }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
