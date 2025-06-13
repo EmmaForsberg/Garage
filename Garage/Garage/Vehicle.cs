@@ -12,10 +12,11 @@ namespace Garage
         public string Color { get; private set; }
         public string Licenseplate { get; private set; }
 
-        protected Vehicle()
+        protected Vehicle(int wheel, string color, string licensePlate)
         {
-
+            Wheel = wheel;
+            Color = color;
+            Licenseplate = licensePlate;
         }
-
     }
 }
