@@ -8,6 +8,7 @@ namespace Garage
 {
     //Klass för att abstrahera ett lager så det inte finns någon direkt kontakt mellan användargränssnittet och garageklassen
     internal class GarageHandler<T> : IHandler<T> where T : Vehicle
+
     {
         private Garage<T> garage;
 
@@ -32,9 +33,10 @@ namespace Garage
             return garage.Remove(vehicle);
         }
 
-        IEnumerable<T> IHandler<T>.ListVehicles()
+        public IEnumerable<T> ListVehicles()
         {
-            throw new NotImplementedException();
+            return garage;
         }
     }
+
 }

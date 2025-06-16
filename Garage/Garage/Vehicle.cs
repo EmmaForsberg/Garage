@@ -18,5 +18,10 @@ namespace Garage
             Color = color;
             Licenseplate = licensePlate;
         }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name}: {Licenseplate}, Color: {Color}, Wheels: {Wheel}";
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Garage
 {
-    internal interface IHandler<T> where T : IVehicle
+    internal interface IHandler<T> where T : Vehicle
     {
         bool AddVehicle(T vehicle);
         bool RemoveVehicle(T vehicle);

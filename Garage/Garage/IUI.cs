@@ -8,6 +8,10 @@ namespace Garage
 {
     internal interface IUI
     {
+        void PrintMenu();
         void ReadInput();
+        void PrintMessage(string msg);
+        void PrintError(string errorMsg);
+        void PrintVehicleList(IEnumerable<Vehicle> vehicles);
     }
 }
