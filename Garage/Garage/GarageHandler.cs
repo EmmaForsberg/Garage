@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Garage
@@ -23,9 +24,10 @@ namespace Garage
             return garage.Add(vehicle);
         }
 
+        //todo Bra att du använder StringComparison.OrdinalIgnoreCase i GarageHandler för att hitta fordon oavsett versaler/gemener. Kontrollera att detta också gäller när du lägger till fordon — så att du inte får dubbletter med samma regnr fast olika case.
         public T FindVehicleByLicensePlate(string licensePlate)
         {
-            throw new NotImplementedException();
+            return garage.FirstOrDefault(vehicle => vehicle.Licenseplate.Equals(licensePlate, StringComparison.OrdinalIgnoreCase));
         }
 
         public bool RemoveVehicle(T vehicle)

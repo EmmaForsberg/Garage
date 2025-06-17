@@ -1,4 +1,6 @@
-﻿namespace Garage
+﻿using System.Runtime.CompilerServices;
+
+namespace Garage
 {
     internal class Program
     {
@@ -9,10 +11,8 @@
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            Console.Write("Ange garagekapacitet: ");
-            int capacity = int.Parse(Console.ReadLine());
-
-            var manager = new GarageManager(capacity); // sätter garagekapacitet här
+            IUI ui = new UI();
+            var manager = new GarageManager(ui);
             manager.Run();
         }
     }
