@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Garage
 {
-    abstract class Vehicle : IVehicle
+    public abstract class Vehicle : IVehicle
     {
         public int Wheel { get; private set; }
         public string Color { get; private set; }
@@ -16,7 +16,7 @@ namespace Garage
         {
             Wheel = wheel;
             Color = color;
-            Licenseplate = licensePlate;
+            Licenseplate = licensePlate.ToUpper(); ;
         }
 
         public override string ToString()

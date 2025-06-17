@@ -19,7 +19,9 @@ namespace Garage
 
         public void PrintError(string errorMsg)
         {
-            throw new NotImplementedException();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(errorMsg);
+            Console.ResetColor();
         }
 
         public void PrintMenu()

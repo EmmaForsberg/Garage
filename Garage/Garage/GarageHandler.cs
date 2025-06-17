@@ -21,10 +21,16 @@ namespace Garage
         //mellanhand som tar emot fordon från ui eller manager och sedan anropar motsvarande metod i Garage klassen för att faktiskt lägga till fordonet i den interna samlingen
         public bool AddVehicle(T vehicle)
         {
+            // Kontrollera om regnummer redan finns — oavsett case
+            var existing = garage.FirstOrDefault(v =>
+                v.Licenseplate.Equals(vehicle.Licenseplate, StringComparison.OrdinalIgnoreCase));
+
+            if (existing != null)
+                return false;
+
             return garage.Add(vehicle);
         }
 
-        //todo Bra att du använder StringComparison.OrdinalIgnoreCase i GarageHandler för att hitta fordon oavsett versaler/gemener. Kontrollera att detta också gäller när du lägger till fordon — så att du inte får dubbletter med samma regnr fast olika case.
         public T FindVehicleByLicensePlate(string licensePlate)
         {
             return garage.FirstOrDefault(vehicle => vehicle.Licenseplate.Equals(licensePlate, StringComparison.OrdinalIgnoreCase));

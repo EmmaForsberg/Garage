@@ -2,13 +2,13 @@
 
 namespace Garage
 {
-    internal class Garage<T> : IEnumerable<T> where T : Vehicle
+    public class Garage<T> : IEnumerable<T> where T : Vehicle
     {
         //privat array att hålla fordonen
         private T?[] vehicles;
 
         //räknare som jag uppdaterar när jag lägger till fordon eller tar bort fordon
-        int count;
+
 
         public Garage(int capacity)
         {
@@ -30,7 +30,6 @@ namespace Garage
         }
 
         //metod för att lägga till
-        //Todo: uppdatera count när jag lägger till fordon
         public bool Add(T vehicle)
         {
             for (var i = 0; i < vehicles.Length; i++)
@@ -38,14 +37,13 @@ namespace Garage
                 if (vehicles[i] == null)
                 {
                     vehicles[i] = vehicle;
-                    count++;
+
                     return true;
                 }
             }
             return false;
         }
 
-        //Todo uppdatera count så det stämmer överens med antal fordon i garaget
         public bool Remove(T vehicle)
         {
             for (var i = 0; i < vehicles.Length; i++)
@@ -54,7 +52,7 @@ namespace Garage
                 if (currentVehicle != null && currentVehicle.Licenseplate == vehicle.Licenseplate)
                 {
                     vehicles[i] = null;
-                    count--;    
+ 
                     return true;
                 }
             }

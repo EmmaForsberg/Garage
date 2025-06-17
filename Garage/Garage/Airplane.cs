@@ -8,5 +8,11 @@
         {
             NumberofEngines = numberofengines;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + $",Number of engines {NumberofEngines}";
+        }
+
     }
 }

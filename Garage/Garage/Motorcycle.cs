@@ -7,5 +7,11 @@
         {
             EngineVolume = enginevolume;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + $", Enginevolyme: {EngineVolume} ";
+        }
+
     }
 }
