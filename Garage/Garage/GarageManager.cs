@@ -8,9 +8,11 @@ namespace Garage
         private IHandler<Vehicle> handler;
         private readonly IUI ui;
 
-        public GarageManager(IUI ui)
+        public GarageManager(IUI ui, IHandler<Vehicle> handler)
         {
             this.ui = ui;
+            this.handler = handler ?? throw new ArgumentNullException(nameof(handler));
+            SeedGarage();
         }
 
         private void SeedGarage()
@@ -30,67 +32,26 @@ namespace Garage
 
                 switch (choice)
                 {
-                    case "1":
-                        int capacity = AskForCapacity(); // Metod som frågar användaren om kapacitet
-                        handler = new GarageHandler<Vehicle>(capacity);
-                        ui.SetHandler(handler);
-                        SeedGarage(); // Lägg in dina förseedade fordon i det nya garaget
-                        ui.PrintMessage($"Nytt garage skapat med kapacitet {capacity}.");
-                        break;
-
                     //// Visa alla fordon
-                    case "2":
-                        if (!IsGarageInitialized()) break;
-                        var vehicles = handler.ListVehicles();
-                        ui.PrintVehicleList(vehicles);
-                        break;
+                    case "1": HandleListVehicles(); break;                  
 
                     // Parkera fordon
+                    case "2": HandleAddVehicle(); break;
+
                     case "3":
-                        if (!IsGarageInitialized()) break;
-                        var newVehicle = GetVehicleFromUser();
-                        if (handler.AddVehicle(newVehicle))
-                            ui.PrintMessage("Fordon parkerat!");
-                        else
-                            ui.PrintError("Garaget är fullt eller fordonet finns redan.");
+                        HandleRemoveVehicle();
                         break;
-
-                    // Ta bort fordon - hämta registreringsnummer, sök och ta bort
                     case "4":
-                        if (!IsGarageInitialized()) break;
-                        var license = GetLicensePlateFromUser();
-                        var vehicleToRemove = handler.FindVehicleByLicensePlate(license);
-                        if (vehicleToRemove != null && handler.RemoveVehicle(vehicleToRemove))
-                            ui.PrintMessage("Fordon borttaget.");
-                        else
-                            ui.PrintError("Fordon hittades inte.");
+                        HandleShowStatistics();
                         break;
-
-                        //Visa statistik över fordonstyper
                     case "5":
-                        if (!IsGarageInitialized()) break;
-                        GetStatistics();
+                        HandleSearchVehicle();
                         break;
-
-                    //Sök fordon
                     case "6":
-                        if (!IsGarageInitialized()) break;
-                        SearchVehicle();
+                        HandleFindVehicleByLicense();
                         break;
 
-                        //Sök fordon via regnr
                     case "7":
-                        if (!IsGarageInitialized()) break;
-                        var regnr = GetLicensePlateFromUser();
-                        var foundVehicle = handler.FindVehicleByLicensePlate(regnr);
-
-                        if (foundVehicle != null)
-                            ui.PrintMessage(foundVehicle.ToString());
-                        else
-                            ui.PrintError("Inget fordon hittades med det registreringsnumret.");
-                        break;
-
-                    case "8":
                         if (!IsGarageInitialized()) break;
                         running = false;
                         ui.PrintMessage("Avslutar programmet.");
@@ -101,6 +62,65 @@ namespace Garage
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Metod för att visa alla fordon
+        /// </summary>
+        private void HandleListVehicles()
+        {
+            if (!IsGarageInitialized()) return;
+            var vehicles = handler.ListVehicles();
+            ui.PrintVehicleList(vehicles);
+        }
+
+        /// <summary>
+        /// Metod för att parkera fordon
+        /// </summary>
+        private void HandleAddVehicle()
+        {
+            if (!IsGarageInitialized()) return;
+            var newVehicle = GetVehicleFromUser();
+            if (handler.AddVehicle(newVehicle))
+                ui.PrintMessage("Fordon parkerat!");
+            else
+                ui.PrintError("Garaget är fullt eller fordonet finns redan.");
+        }
+
+
+        private void HandleRemoveVehicle()
+        {
+            if (!IsGarageInitialized()) return;
+            var license = GetLicensePlateFromUser();
+            var vehicleToRemove = handler.FindVehicleByLicensePlate(license);
+            if (vehicleToRemove != null && handler.RemoveVehicle(vehicleToRemove))
+                ui.PrintMessage("Fordon borttaget.");
+            else
+                ui.PrintError("Fordon hittades inte.");
+        }
+
+        private void HandleShowStatistics()
+        {
+            if (!IsGarageInitialized()) return;
+            GetStatistics();
+        }
+
+        private void HandleSearchVehicle()
+        {
+            if (!IsGarageInitialized()) return;
+            SearchVehicle();
+        }
+
+        private void HandleFindVehicleByLicense()
+        {
+            if (!IsGarageInitialized()) return;
+            var regnr = GetLicensePlateFromUser();
+            var foundVehicle = handler.FindVehicleByLicensePlate(regnr);
+
+            if (foundVehicle != null)
+                ui.PrintMessage(foundVehicle.ToString());
+            else
+                ui.PrintError("Inget fordon hittades med det registreringsnumret.");
         }
 
         private void SearchVehicle()
@@ -140,21 +160,16 @@ namespace Garage
                 (!searchType || v.GetType().Name.ToLower() == type)
             );
 
-            ui.PrintVehicleList(result);
 
-        }
-
-        private int AskForCapacity()
-        {
-            while (true)
+            if (!result.Any())
             {
-                ui.PrintMessage("Ange kapacitet för garaget (antal platser): ");
-                var input = ui.ReadInput();
-                if (int.TryParse(input, out int capacity) && capacity > 0)
-                    return capacity;
-                else
-                    ui.PrintError("Ange ett giltigt positivt heltal.");
+                ui.PrintMessage("Inga fordon matchade din sökning.");
             }
+            else
+            {
+                ui.PrintVehicleList(result);
+            }
+
         }
 
         private Vehicle GetVehicleFromUser()
@@ -162,7 +177,7 @@ namespace Garage
             string type;
             while (true)
             {
-                ui.PrintMessage("Ange fordonstyp (Car, Motorcycle, Bus, Airplane, Boat, MC): ");
+                ui.PrintMessage("Ange fordonstyp (Car, Motorcycle, Bus, Airplane, Boat): ");
                 type = ui.ReadInput().Trim().ToLower();
                 if (type == "car" || type == "motorcycle" || type == "bus" || type =="airplane" || type == "boat")
                     break;
@@ -250,13 +265,10 @@ namespace Garage
                     return new Airplane(wheels, color, licensePlate, length);
 
                 default:
-                    // Här borde vi aldrig hamna tack vare validering högst upp,
-                    // men bara för säkerhets skull:
                     ui.PrintError("Okänd fordonstyp. Försök igen.");
                     return GetVehicleFromUser();
             }
         }
-
 
         private string GetLicensePlateFromUser()
         {

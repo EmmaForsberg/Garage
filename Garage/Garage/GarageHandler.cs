@@ -31,7 +31,7 @@ namespace Garage
             return garage.Add(vehicle);
         }
 
-        public T FindVehicleByLicensePlate(string licensePlate)
+        public T? FindVehicleByLicensePlate(string licensePlate)
         {
             return garage.FirstOrDefault(vehicle => vehicle.Licenseplate.Equals(licensePlate, StringComparison.OrdinalIgnoreCase));
         }

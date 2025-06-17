@@ -7,7 +7,7 @@ public class GarageTests
     public void AddVehicle_WhenGarageHasSpace_ReturnsTrue()
     {
         // Arrange
-        var garage = new Garage<Car>(2);  // skapa garage med kapacitet 2
+        var garage = new Garage<Car>(2); 
         var car = new Car(4, "Röd", "ABC123", "Bensin");
 
         // Act

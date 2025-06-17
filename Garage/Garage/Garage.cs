@@ -7,9 +7,6 @@ namespace Garage
         //privat array att hålla fordonen
         private T?[] vehicles;
 
-        //räknare som jag uppdaterar när jag lägger till fordon eller tar bort fordon
-
-
         public Garage(int capacity)
         {
             vehicles = new T[capacity];

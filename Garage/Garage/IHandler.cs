@@ -11,7 +11,7 @@ namespace Garage
         bool AddVehicle(T vehicle);
         bool RemoveVehicle(T vehicle);
         IEnumerable<T> ListVehicles();
-        T FindVehicleByLicensePlate(string licensePlate);    
+        T? FindVehicleByLicensePlate(string licensePlate);    
 
     }
 }

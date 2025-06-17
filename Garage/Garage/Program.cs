@@ -12,7 +12,16 @@ namespace Garage
         static void Main(string[] args)
         {
             IUI ui = new UI();
-            var manager = new GarageManager(ui);
+
+            int capacity;
+            Console.Write("Ange kapacitet för garaget: ");
+            while (!int.TryParse(Console.ReadLine(), out capacity) || capacity <= 0)
+            {
+                Console.WriteLine("Felaktig inmatning. Ange ett positivt heltal för kapaciteten:");
+            }
+
+            IHandler<Vehicle> handler = new GarageHandler<Vehicle>(capacity);
+            var manager = new GarageManager(ui, handler);
             manager.Run();
         }
     }
