@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Garage
 {
-    internal class UI : IUI
+    internal class ConsoleUI : IUI
     {
         private IHandler<Vehicle>? handler;
         

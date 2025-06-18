@@ -11,13 +11,13 @@ namespace Garage
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            IUI ui = new UI();
+            IUI ui = new ConsoleUI();
 
             int capacity;
-            Console.Write("Ange kapacitet för garaget: ");
-            while (!int.TryParse(Console.ReadLine(), out capacity) || capacity <= 0)
+            ui.PrintMessage("Ange kapacitet för garaget: ");
+            while (!int.TryParse(ui.ReadInput(), out capacity) || capacity <= 0)
             {
-                Console.WriteLine("Felaktig inmatning. Ange ett positivt heltal för kapaciteten:");
+                ui.PrintMessage("Felaktig inmatning. Ange ett positivt heltal för kapaciteten:");
             }
 
             IHandler<Vehicle> handler = new GarageHandler<Vehicle>(capacity);
