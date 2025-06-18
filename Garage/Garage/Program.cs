@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Garage.Managers;
 
 namespace Garage
 {
