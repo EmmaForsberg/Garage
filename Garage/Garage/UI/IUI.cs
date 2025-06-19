@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Garage.Handlers;
+using Garage.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Garage
+namespace Garage.UI
 {
     internal interface IUI
     {

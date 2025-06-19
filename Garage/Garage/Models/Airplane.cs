@@ -1,4 +1,4 @@
-﻿namespace Garage
+﻿namespace Garage.Models
 {
     internal class Airplane : Vehicle
     {

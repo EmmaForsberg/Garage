@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Garage
+namespace Garage.Models
 {
     public abstract class Vehicle : IVehicle
     {

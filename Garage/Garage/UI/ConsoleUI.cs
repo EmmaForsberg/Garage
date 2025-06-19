@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Garage.Handlers;
+using Garage.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Garage
+namespace Garage.UI
 {
     internal class ConsoleUI : IUI
     {
@@ -24,7 +26,7 @@ namespace Garage
 
         public void PrintMenu()
         {
-            Console.WriteLine("1. Visa alla fordon ");
+            Console.WriteLine("\n1. Visa alla fordon ");
             Console.WriteLine("2. Parkera ett fordon.");
             Console.WriteLine("3. Ta bort ett fordon.");
             Console.WriteLine("4. Visa statistik över fordonstyper");

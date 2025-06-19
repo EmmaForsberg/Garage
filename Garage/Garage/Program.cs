@@ -1,5 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using Garage.Handlers;
 using Garage.Managers;
+using Garage.Models;
+using Garage.UI;
 
 namespace Garage
 {
@@ -13,16 +16,7 @@ namespace Garage
         static void Main(string[] args)
         {
             IUI ui = new ConsoleUI();
-
-            int capacity;
-            ui.PrintMessage("Ange kapacitet för garaget: ");
-            while (!int.TryParse(ui.ReadInput(), out capacity) || capacity <= 0)
-            {
-                ui.PrintMessage("Felaktig inmatning. Ange ett positivt heltal för kapaciteten:");
-            }
-
-            IHandler<Vehicle> handler = new GarageHandler<Vehicle>(capacity);
-            var manager = new GarageManager(ui, handler);
+            var manager = new GarageManager(ui);
             manager.Run();
         }
     }

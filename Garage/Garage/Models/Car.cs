@@ -1,4 +1,6 @@
-﻿namespace Garage
+﻿using Garage.Models;
+
+namespace Garage
 {
     public class Car : Vehicle
     {

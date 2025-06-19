@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using Garage.Handlers;
+using Garage.Helpers;
+using Garage.Models;
+using Garage.UI;
 
 namespace Garage.Managers
 {
@@ -6,24 +9,49 @@ namespace Garage.Managers
     {
         private IHandler<Vehicle> handler;
         private readonly IUI ui;
+        private readonly InputHelper inputHelper;
+        private readonly VehicleFactory vehicleFactory;
 
-        public GarageManager(IUI ui, IHandler<Vehicle> handler)
+
+        public GarageManager(IUI ui)
         {
             this.ui = ui;
-
-            // om handler är null kastas ett undantag direkt, annars tilldelas det inkommande handler objektet till klassens privata fält
-            this.handler = handler ?? throw new ArgumentNullException(nameof(handler));
-            SeedGarage();
+            this.inputHelper = new InputHelper(ui);
+            this.vehicleFactory = new VehicleFactory(inputHelper);
         }
 
-        private void SeedGarage()
+        private List<Vehicle> GetSeedVehicles()
         {
-            handler.AddVehicle(new Car(4, "Rosa", "EMA365", "diesel"));
-            handler.AddVehicle(new Motorcycle(2, "Svart", "MOT123", 100));
-            handler.AddVehicle(new Bus(30, "Blå", "BUS456", 55));
+            var vehicles = new List<Vehicle>();
+            vehicles.Add(new Car(4, "Rosa", "EMA365", "diesel"));
+            vehicles.Add(new Motorcycle(2, "Svart", "MOT123", 100));
+            vehicles.Add(new Bus(30, "Blå", "BUS456", 55));
+            vehicles.Add(new Airplane(6, "Vit", "FLY123", 6));
+            vehicles.Add(new Boat("Grön", "BOA319", 3));
+            return vehicles;
         }
 
         public void Run()
+        {
+            var seedVehicles = GetSeedVehicles();
+
+            ShowSeedVehicles(seedVehicles);
+
+            int capacity = GetValidCapacity(seedVehicles.Count);
+
+            // Skapa handler och garage
+            handler = new GarageHandler<Vehicle>(capacity);
+
+            // Lägg in seedade fordon
+            foreach (var v in seedVehicles)
+            {
+                handler.AddVehicle(v);
+            }
+
+            MainMenuLoop();
+        }
+
+        private void MainMenuLoop()
         {
             bool running = true;
             while (running)
@@ -34,23 +62,47 @@ namespace Garage.Managers
                 switch (choice)
                 {
                     case "1": HandleListVehicles(); break;
-
                     case "2": HandleAddVehicle(); break;
-
                     case "3": HandleRemoveVehicle(); break;
-
                     case "4": HandleShowStatistics(); break;
-
                     case "5": HandleSearchVehicle(); break;
-
                     case "6": HandleFindVehicleByLicense(); break;
-
                     case "7": running = false; ui.PrintMessage("Avslutar programmet."); break;
-
                     default: ui.PrintError("Ogiltigt val."); break;
                 }
             }
         }
+
+
+        private void ShowSeedVehicles(List<Vehicle> seedVehicles)
+        {
+            ui.PrintMessage("Följande fordon kommer att finnas i garaget:\n");
+            foreach (var vehicle in seedVehicles)
+            {
+                ui.PrintMessage(vehicle.ToString());
+            }
+        }
+
+        private int GetValidCapacity(int minCapacity)
+        {
+            int capacity = 0;
+            bool valid = false;
+
+            do
+            {
+                ui.PrintMessage($"Ange garagekapacitet (måste vara minst {minCapacity}):");
+                string input = ui.ReadInput();
+
+                if (int.TryParse(input, out capacity) && capacity >= minCapacity)
+                    valid = true;
+                else
+                    ui.PrintError("Felaktig inmatning. Ange ett giltigt heltal som är tillräckligt stort.");
+
+            } while (!valid);
+
+            return capacity;
+        }
+
 
         /// <summary>
         /// Metod för att visa alla fordon
@@ -77,7 +129,7 @@ namespace Garage.Managers
         //Metod för att ta bort fordon
         private void HandleRemoveVehicle()
         {
-            var license = GetValidLicensePlate();
+            var license = inputHelper.GetValidLicense();
             var vehicleToRemove = handler.FindVehicleByLicensePlate(license);
             if (vehicleToRemove != null && handler.RemoveVehicle(vehicleToRemove))
                 ui.PrintMessage("Fordon borttaget.");
@@ -151,7 +203,7 @@ namespace Garage.Managers
         //Metod för att söka fordon genom registeringsplåt
         private void HandleFindVehicleByLicense()
         {
-            var regnr = GetValidLicensePlate();
+            var regnr = inputHelper.GetValidLicense();
             var foundVehicle = handler.FindVehicleByLicensePlate(regnr);
 
             if (foundVehicle != null)
@@ -163,112 +215,8 @@ namespace Garage.Managers
         //Metod för att lägga till ett nytt fordon
         private Vehicle GetVehicleFromUser()
         {
-            string type = GetVehicleTypeFromUser();
-            int wheels = GetPositiveIntFromUser("Ange antal hjul: ");
-            string color = GetTextInput("Ange färg");
-            string licensePlate = GetValidLicensePlate();
-
-            return type switch
-            {
-                "car" => CreateCar(wheels, color, licensePlate),
-                "motorcycle" => CreateMc(wheels, color, licensePlate),
-                "bus" => CreateBus(wheels, color, licensePlate),
-                "airplane" => CreateAirplane(wheels, color, licensePlate),
-                "boat" => CreateBoat(color, licensePlate),
-                _ => throw new InvalidOperationException("Ogiltig fordonstyp.")
-            };
-        }
-
-        private Vehicle CreateBoat(string color, string licensePlate)
-        {
-            int length = GetPositiveIntFromUser("Ange längden på båten: ");
-            return new Boat(color, licensePlate, length);
-        }
-
-        private Vehicle CreateAirplane(int wheels, string color, string licensePlate)
-        {
-            int numberofengines = GetPositiveIntFromUser("Ange antal motorer: ");
-            return new Airplane(wheels, color, licensePlate, numberofengines);
-        }
-
-        private Vehicle CreateBus(int wheels, string color, string licensePlate)
-        {
-            int seats = GetPositiveIntFromUser("Ange antal säten: ");
-            return new Bus(wheels, color, licensePlate, seats);
-        }
-
-        private Vehicle CreateCar(int wheels, string color, string licensePlate)
-        {
-            string fuel = GetTextInput("Ange bränsletyp: ");
-            return new Car(wheels, color, licensePlate, fuel);
-        }
-
-        private Vehicle CreateMc(int wheels, string color, string licensePlate)
-        {
-            int enginevolyme = GetPositiveIntFromUser("Ange enginevolyme: ");
-            return new Motorcycle(wheels, color, licensePlate, enginevolyme);
-        }
-
-
-        // Hjälpfunktion för att läsa in tal
-        private int GetPositiveIntFromUser(string prompt)
-        {
-            while (true)
-            {
-                ui.PrintMessage(prompt);
-                var input = ui.ReadInput();
-
-                if (int.TryParse(input, out int number) && number > 0)
-                    return number;
-
-                ui.PrintError("Ange ett giltigt positivt heltal.");
-            }
-        }
-
-        //hjälpfunktion för att läsa in sträng
-        private string GetTextInput(string prompt)
-        {
-            while (true)
-            {
-                ui.PrintMessage(prompt);
-                var input = ui.ReadInput().Trim();
-
-                if (!string.IsNullOrWhiteSpace(input))
-                    return input;
-
-                ui.PrintError("Fältet får inte vara tomt. Försök igen.");
-            }
-        }
-
-        private string GetVehicleTypeFromUser()
-        {
-            var validTypes = new[] { "car", "motorcycle", "bus", "airplane", "boat" };
-
-            while (true)
-            {
-                ui.PrintMessage("Ange fordonstyp (Car, Motorcycle, Bus, Airplane, Boat): ");
-                var input = ui.ReadInput().Trim().ToLower();
-
-                if (validTypes.Contains(input))
-                    return input;
-
-                ui.PrintError("Okänd fordonstyp. Försök igen.");
-            }
-        }
-
-        private string GetValidLicensePlate()
-        {
-            var regex = new Regex("^[A-Za-z]{3}[0-9]{3}$");
-            while (true)
-            {
-                ui.PrintMessage("Ange registreringsnummer (3 bokstäver + 3 siffror): ");
-                var input = ui.ReadInput().ToUpper();
-
-                if (regex.IsMatch(input))
-                    return input;
-                else
-                    ui.PrintError("Ogiltigt registreringsnummer. Försök igen.");
-            }
+            string type = inputHelper.GetVehicleTypeFromUser();
+            return vehicleFactory.CreateVehicle(type);
         }
 
         private bool IsGarageInitialized()

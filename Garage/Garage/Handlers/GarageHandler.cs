@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Garage.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Garage
+namespace Garage.Handlers
 {
     //Klass för att abstrahera ett lager så det inte finns någon direkt kontakt mellan användargränssnittet och garageklassen
     internal class GarageHandler<T> : IHandler<T> where T : Vehicle
